@@ -15,7 +15,7 @@ class MApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        PluginImpl.init(context = baseContext, instrumentation = false, firstMode = false)
+        PluginImpl.init(context = baseContext, instrumentation = true, firstMode = false)
     }
 
     companion object {

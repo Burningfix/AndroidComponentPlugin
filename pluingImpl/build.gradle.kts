@@ -28,7 +28,7 @@ android {
 }
 
 dependencies {
-    implementation(DependenciesConfig.STD_LIB)
-    implementation(DependenciesConfig.APP_COMPAT)
-    implementation(DependenciesConfig.KTX_CORE)
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:${KotlinConstants.kotlin_version}")
+    implementation("androidx.appcompat:appcompat:1.5.1")
+    implementation( "androidx.core:core-ktx:1.9.0")
 }

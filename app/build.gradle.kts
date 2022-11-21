@@ -90,7 +90,6 @@ android {
         jvmTarget = "1.8"
     }
 }
-
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(DependenciesConfig.STD_LIB)
