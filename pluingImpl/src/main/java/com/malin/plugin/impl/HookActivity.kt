@@ -8,6 +8,7 @@ import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Handler
 import android.os.Message
+import android.util.Log
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
@@ -55,6 +56,7 @@ object HookActivity {
                     // 所有静态对象的反射可以通过传null获取,如果是非静态必须传实例
                     val iActivityTaskManagerSingletonObj =
                         iActivityTaskManagerSingletonField.get(null)
+                    Log.i("sanbo"," hookStartActivity["+apiLevel+"]~~ iActivityTaskManagerSingletonObj: "+iActivityTaskManagerSingletonObj)
 
                     // 5.
                     handleIActivityTaskManager(
@@ -76,6 +78,9 @@ object HookActivity {
                     val iActivityManagerSingletonField =
                         activityManagerClazz.getDeclaredField("IActivityManagerSingleton")
                             .also { it.isAccessible = true }
+
+
+                    Log.i("sanbo"," hookStartActivity["+apiLevel+"]~~ iActivityManagerSingletonField: "+iActivityManagerSingletonField)
 
                     // 4.获取IActivityManagerSingleton的实例对象
                     // private static final Singleton<IActivityManager> IActivityManagerSingleton
@@ -99,6 +104,7 @@ object HookActivity {
                     // 3.对私有属性gDefault,解除私有限定
                     val singletonField = activityManagerNativeClazz.getDeclaredField("gDefault")
                         .also { it.isAccessible = true }
+                    Log.i("sanbo"," hookStartActivity["+apiLevel+"]~~ singletonField: "+singletonField)
 
                     // 4.获得gDefaultField中对应的属性值(被static修饰了),既得到Singleton<IActivityManager>对象的实例
                     // 所有静态对象的反射可以通过传null获取
@@ -106,11 +112,7 @@ object HookActivity {
                     handleIActivityManager(context, subActivityClazz, singletonField[null])
                 }
             }
-        } catch (e: IllegalAccessException) {
-            e.printStackTrace()
-        } catch (e: NoSuchFieldException) {
-            e.printStackTrace()
-        } catch (e: ClassNotFoundException) {
+        } catch (e: Throwable) {
             e.printStackTrace()
         }
     }
@@ -125,6 +127,8 @@ object HookActivity {
         IActivityTaskManagerSingletonObj: Any?,
     ) {
         try {
+            Log.i("sanbo","inside  handleIActivityTaskManager   ")
+
             // 5.获取private static final Singleton<IActivityTaskManager> IActivityTaskManagerSingleton对象中的属性private T mInstance的值
             // 既,为了获取一个IActivityTaskManager的实例对象
             // private static final Singleton<IActivityTaskManager> IActivityTaskManagerSingleton = new Singleton<IActivityTaskManager>() {...}
@@ -143,6 +147,7 @@ object HookActivity {
             // 9.获取mInstance属性的值,既IActivityTaskManager的实例
             // 从private static final Singleton<IActivityTaskManager> IActivityTaskManagerSingleton实例对象中获取mInstance属性对应的值,既IActivityTaskManager
             var iActivityTaskManager = mInstanceField[IActivityTaskManagerSingletonObj]
+            Log.i("sanbo","  handleIActivityTaskManager  iActivityTaskManager: "+iActivityTaskManager)
 
             // 10.android10之后,从mInstanceField中取到的值为null,这里判断如果为null,就再次从get方法中再取一次
             if (iActivityTaskManager == null) {
@@ -150,6 +155,7 @@ object HookActivity {
                     singletonClazz.getDeclaredMethod("get").also { it.isAccessible = true }
                 iActivityTaskManager = getMethod.invoke(IActivityTaskManagerSingletonObj)
             }
+            Log.i("sanbo","  handleIActivityTaskManager ==== iActivityTaskManager: "+iActivityTaskManager)
 
             // 11.获取IActivityTaskManager接口的类对象
             // package android.app
@@ -161,20 +167,13 @@ object HookActivity {
                 Thread.currentThread().contextClassLoader, arrayOf(iActivityTaskManagerClazz),
                 IActivityInvocationHandler(iActivityTaskManager, context, subActivityClazz)
             )
+            Log.i("sanbo","  handleIActivityTaskManager iActivityTaskManagerProxy: "+iActivityTaskManagerProxy)
 
             // 13.重新赋值
             // 给mInstance属性,赋新值
             // 给Singleton<IActivityTaskManager> IActivityTaskManagerSingleton实例对象的属性private T mInstance赋新值
             mInstanceField[IActivityTaskManagerSingletonObj] = iActivityTaskManagerProxy
-        } catch (e: IllegalAccessException) {
-            e.printStackTrace()
-        } catch (e: NoSuchFieldException) {
-            e.printStackTrace()
-        } catch (e: ClassNotFoundException) {
-            e.printStackTrace()
-        } catch (e: NoSuchMethodException) {
-            e.printStackTrace()
-        } catch (e: InvocationTargetException) {
+        } catch (e: Throwable) {
             e.printStackTrace()
         }
     }
@@ -189,6 +188,8 @@ object HookActivity {
         iActivityManagerSingletonObj: Any?,
     ) {
         try {
+            Log.i("sanbo"," handleIActivityManager iActivityManagerSingletonObj: "+iActivityManagerSingletonObj +"------subActivityClazz:"+subActivityClazz)
+
             // 5.获取private static final Singleton<IActivityManager> IActivityManagerSingleton对象中的属性private T mInstance的值
             // 既,为了获取一个IActivityManager的实例对象
             // private static final Singleton<IActivityManager> IActivityManagerSingleton = new Singleton<IActivityManager>(){...}
@@ -207,6 +208,7 @@ object HookActivity {
             // 9.获取mInstance属性的值,既IActivityManager的实例
             // 从private static final Singleton<IActivityManager> IActivityManagerSingleton实例对象中获取mInstance属性对应的值,既IActivityManager
             val iActivityManager = mInstanceField[iActivityManagerSingletonObj]
+            Log.i("sanbo","  handleIActivityManager iActivityManager: "+iActivityManager)
 
             // 10.获取IActivityManager接口的类对象
             // package android.app
@@ -218,16 +220,13 @@ object HookActivity {
                 Thread.currentThread().contextClassLoader, arrayOf(iActivityManagerClazz),
                 IActivityInvocationHandler(iActivityManager, context, subActivityClazz)
             )
+            Log.i("sanbo","  handleIActivityManager iActivityManagerProxy: "+iActivityManagerProxy)
 
             // 12.重新赋值
             // 给mInstance属性,赋新值
             // 给Singleton<IActivityManager> IActivityManagerSingleton实例对象的属性private T mInstance赋新值
             mInstanceField[iActivityManagerSingletonObj] = iActivityManagerProxy
-        } catch (e: IllegalAccessException) {
-            e.printStackTrace()
-        } catch (e: NoSuchFieldException) {
-            e.printStackTrace()
-        } catch (e: ClassNotFoundException) {
+        } catch (e: Throwable) {
             e.printStackTrace()
         }
     }
@@ -252,6 +251,7 @@ object HookActivity {
             // 3.获取ActivityThread的对象实例
             // public static ActivityThread currentActivityThread(){return sCurrentActivityThread;}
             val activityThreadObj = currentActivityThreadMethod.invoke(null)
+            Log.i("sanbo","  hookLauncherActivity activityThreadObj: "+activityThreadObj)
 
             // 4.获取ActivityThread 的属性mH
             // final H mH = new H();
@@ -260,6 +260,7 @@ object HookActivity {
             // 5.获取mH的值,既获取ActivityThread类中H类的实例对象
             // 从ActivityThread实例中获取mH属性对应的值,既mH的值
             val mHObj = mHField[activityThreadObj]
+            Log.i("sanbo","  hookLauncherActivity mHObj: "+mHObj)
 
             // 6.获取Handler的Class对象
             // package android.os
@@ -271,6 +272,7 @@ object HookActivity {
             // Callback是Handler类内部的一个接口
             val mCallbackField =
                 handlerClazz.getDeclaredField("mCallback").also { it.isAccessible = true }
+            Log.i("sanbo","  hookLauncherActivity mCallbackField: "+mCallbackField)
 
             // 8.给mH增加mCallback
             // 给mH,既Handler的子类设置mCallback属性,提前对消息进行处理.
@@ -280,15 +282,7 @@ object HookActivity {
             } else {
                 mCallbackField[mHObj] = HandlerCallback()
             }
-        } catch (e: InvocationTargetException) {
-            e.printStackTrace()
-        } catch (e: NoSuchMethodException) {
-            e.printStackTrace()
-        } catch (e: IllegalAccessException) {
-            e.printStackTrace()
-        } catch (e: NoSuchFieldException) {
-            e.printStackTrace()
-        } catch (e: ClassNotFoundException) {
+        } catch (e: Throwable) {
             e.printStackTrace()
         }
     }
@@ -313,6 +307,9 @@ object HookActivity {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
+        Log.i("sanbo","  HandlerCallback handleLaunchActivity launchActivity : "+launchActivity)
+
         if (msg.what != launchActivity) return
         // private class H extends Handler {
         // public void handleMessage(Message msg) {
@@ -330,6 +327,8 @@ object HookActivity {
         // static final class ActivityClientRecord {}
         val activityClientRecordObj = msg.obj
         try {
+            Log.i("sanbo","  HandlerCallback activityClientRecordObj : "+activityClientRecordObj)
+
             // 2.获取ActivityClientRecord的intent属性
             // Intent intent;
             val safeIntentField = activityClientRecordObj.javaClass.getDeclaredField("intent")
@@ -337,6 +336,7 @@ object HookActivity {
 
             // 3.获取ActivityClientRecord的intent属性的值,既安全的Intent
             val safeIntent = safeIntentField[activityClientRecordObj] as? Intent ?: return
+            Log.i("sanbo","  HandlerCallback safeIntent : "+safeIntent)
 
             // 4.获取原始的Intent
             val originIntent: Intent? = if (Build.VERSION.SDK_INT >= 33) {
@@ -346,10 +346,12 @@ object HookActivity {
                 safeIntent.getParcelableExtra(EXTRA_ORIGIN_INTENT)
             }
             if (originIntent == null) return
+            Log.i("sanbo","  HandlerCallback originIntent : "+originIntent)
 
             // 5.将安全的Intent,替换为原始的Intent,以启动我们要启动的未注册的Activity
             safeIntent.component = originIntent.component
 
+            Log.i("sanbo","  HandlerCallback final safeIntent : "+safeIntent)
 
             // 给插件apk设置主题
             val activityInfoField =
@@ -360,7 +362,7 @@ object HookActivity {
             activityInfo.theme = selectSystemTheme()
 
 
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             e.printStackTrace()
         }
     }
@@ -395,6 +397,7 @@ object HookActivity {
     @SuppressLint("DiscouragedPrivateApi")
     fun hookPackageManager(context: Context, subActivityClazz: Class<*>) {
         try {
+            Log.i("sanbo","inside hookPackageManager~~  ")
             // 1.获取ActivityThread的值
             val activityThreadClazz = Class.forName("android.app.ActivityThread")
             // public static ActivityThread currentActivityThread() {
@@ -405,6 +408,7 @@ object HookActivity {
                     .also { it.isAccessible = true }
 
             val activityThread = currentActivityThreadMethod.invoke(null)
+            Log.i("sanbo"," hookPackageManager~~ activityThread: "+activityThread)
 
             // 2.获取ActivityThread里面原始的 sPackageManager
             // static IPackageManager sPackageManager;
@@ -412,6 +416,7 @@ object HookActivity {
                 .also { it.isAccessible = true }
 
             val sPackageManager = sPackageManagerField[activityThread]
+            Log.i("sanbo"," hookPackageManager~~ sPackageManager: "+sPackageManager)
 
             // 3.准备好代理对象, 用来替换原始的对象
             val iPackageManagerClazz = Class.forName("android.content.pm.IPackageManager")
@@ -423,26 +428,20 @@ object HookActivity {
                     subActivityClazz.name
                 )
             )
+            Log.i("sanbo"," hookPackageManager~~ proxy: "+proxy)
 
             // 4.替换掉ActivityThread里面的 sPackageManager 字段
             sPackageManagerField[activityThread] = proxy
 
             // 5.替换 ApplicationPackageManager里面的 mPM对象
             val packageManager = context.packageManager
+            Log.i("sanbo"," hookPackageManager~~ packageManager: "+packageManager)
+
             // PackageManager的实现类ApplicationPackageManager中的mPM
             // private final IPackageManager mPM;
-            val mPmField =
-                packageManager.javaClass.getDeclaredField("mPM").also { it.isAccessible = true }
+            val mPmField = packageManager.javaClass.getDeclaredField("mPM").also { it.isAccessible = true }
             mPmField[packageManager] = proxy
-        } catch (e: InvocationTargetException) {
-            e.printStackTrace()
-        } catch (e: NoSuchMethodException) {
-            e.printStackTrace()
-        } catch (e: IllegalAccessException) {
-            e.printStackTrace()
-        } catch (e: NoSuchFieldException) {
-            e.printStackTrace()
-        } catch (e: ClassNotFoundException) {
+        } catch (e: Throwable) {
             e.printStackTrace()
         }
     }
@@ -491,6 +490,9 @@ object HookActivity {
      */
     private class HandlerCallback : Handler.Callback {
         override fun handleMessage(msg: Message): Boolean {
+
+            Log.i("sanbo","  HandlerCallback handleMessage msg : "+msg)
+
             handleLaunchActivity(msg)
             return false
         }
@@ -502,6 +504,10 @@ object HookActivity {
      */
     private class HandlerCallbackP : Handler.Callback {
         override fun handleMessage(msg: Message): Boolean {
+
+
+            Log.i("sanbo","  HandlerCallbackP handleMessage msg : "+msg)
+
             // android.app.ActivityThread$H.EXECUTE_TRANSACTION = 159
             // android 9.0反射,Accessing hidden field Landroid/app/ActivityThread$H;->EXECUTE_TRANSACTION:I (dark greylist, reflection)
             // android9.0 深灰名单（dark greylist）则debug版本在会弹出dialog提示框，在release版本会有Toast提示，均提示为"Detected problems with API compatibility"
@@ -526,7 +532,7 @@ object HookActivity {
                     Class.forName("android.app.servertransaction.ClientTransaction")
                         .getDeclaredMethod("getLifecycleStateRequest")
                         .also { it.isAccessible = true }.invoke(clientTransactionObj)
-
+                Log.i("sanbo","  HandlerCallbackP handleActivity activityLifecycleItem : "+activityLifecycleItem)
                 val resumeActivityItemClazz =
                     Class.forName("android.app.servertransaction.ResumeActivityItem")
                 if (!resumeActivityItemClazz.isInstance(activityLifecycleItem)) return
@@ -537,6 +543,7 @@ object HookActivity {
                 val mActivityCallbacksField =
                     clientTransactionObj.javaClass.getDeclaredField("mActivityCallbacks")
                         .also { it.isAccessible = true }
+                Log.i("sanbo","  HandlerCallbackP handleActivity mActivityCallbacksField : "+mActivityCallbacksField)
 
                 // 4.获取ClientTransaction类中mActivityCallbacks属性的值,既List<ClientTransactionItem>
                 val mActivityCallbacks = mActivityCallbacksField[clientTransactionObj] as? List<*>
@@ -555,6 +562,7 @@ object HookActivity {
                 // 7.获取LaunchActivityItem的实例
                 // public class LaunchActivityItem extends ClientTransactionItem
                 val launchActivityItem = mActivityCallbacks[0]
+                Log.i("sanbo","  HandlerCallbackP handleActivity launchActivityItem : "+launchActivityItem)
 
                 // 8.ClientTransactionItem的mIntent属性的mIntent的Field
                 // private Intent mIntent;
@@ -565,6 +573,7 @@ object HookActivity {
                 // 10.获取mIntent属性的值,既桩Intent(安全的Intent)
                 // 从LaunchActivityItem中获取属性mIntent的值
                 val safeIntent = mIntentField[launchActivityItem] as? Intent ?: return
+                Log.i("sanbo","  HandlerCallbackP handleActivity safeIntent : "+safeIntent)
 
                 // 11.获取原始的Intent
                 // 12.需要判断originIntent != null
@@ -576,16 +585,18 @@ object HookActivity {
                         safeIntent.getParcelableExtra(EXTRA_ORIGIN_INTENT)
                     }
                 if (originIntent == null) return
+                Log.i("sanbo","  HandlerCallbackP handleActivity originIntent : "+originIntent)
 
                 // 13.将原始的Intent,赋值给clientTransactionItem的mIntent属性
                 safeIntent.component = originIntent.component
+                Log.i("sanbo","  HandlerCallbackP handleActivity final  safeIntent : "+safeIntent)
 
                 // 给插件apk设置主题
                 val activityInfo: ActivityInfo = launchActivityItemClazz.getDeclaredField("mInfo")
                     .also { it.isAccessible = true }.get(launchActivityItem) as ActivityInfo
                 activityInfo.theme = selectSystemTheme()
 
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 e.printStackTrace()
             }
         }
@@ -599,6 +610,8 @@ object HookActivity {
         // bug fixed java.lang.NullPointerException: null cannot be cast to non-null type kotlin.Any
         @Throws(Throwable::class)
         override fun invoke(proxy: Any, method: Method, args: Array<Any>?): Any? {
+            Log.i("sanbo","  PackageManagerProxyHandler invoke  Method: "+method)
+
             // public android.content.pm.ActivityInfo getActivityInfo(android.content.ComponentName className, int flags, int userId)
             if ("getActivityInfo" == method.name && !args.isNullOrEmpty()) {
                 var index = 0

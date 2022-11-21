@@ -9,7 +9,7 @@ import org.lsposed.hiddenapibypass.HiddenApiBypass
 class MApplication : Application() {
     override fun attachBaseContext(context: Context) {
         super.attachBaseContext(context)
-        if (Build.VERSION.SDK_INT >= 28) HiddenApiBypass.addHiddenApiExemptions("")
+        if (Build.VERSION.SDK_INT >= 28) HiddenApiBypass.addHiddenApiExemptions("L")
     }
 
     override fun onCreate() {

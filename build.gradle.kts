@@ -1,7 +1,9 @@
 buildscript {
     repositories {
-        google()
+        mavenLocal()
         mavenCentral()
+        google()
+        jcenter()
     }
     // https://www.guardsquare.com/manual/setup/upgrading
     dependencies {
@@ -12,8 +14,10 @@ buildscript {
 
 allprojects {
     repositories {
-        google()
+        mavenLocal()
         mavenCentral()
+        google()
+        jcenter()
     }
 
     gradle.projectsEvaluated {

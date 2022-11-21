@@ -9,9 +9,9 @@
 
     <ImageView
         android:id="@+id/iv_plugin_img"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="50dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
         tools:ignore="ContentDescription"
         tools:src="@tools:sample/avatars" />

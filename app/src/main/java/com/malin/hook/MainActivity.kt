@@ -6,7 +6,6 @@ import android.content.ComponentName
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import android.widget.ImageView
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
@@ -16,7 +15,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var mIvPluginRes: ImageView
 
-    private val mBtnStartHostRegisterAct: Button by bindView(R.id.btn_start_host_register_act)
+//    private val mBtnStartHostRegisterAct: Button by bindView(R.id.btn_start_host_register_act)
 
     @SuppressLint("InflateParams")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,9 +41,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun initListener() {
         mIvPluginRes.setOnClickListener(this)
-        mBtnStartHostRegisterAct.setOnClickListener {
-            startActivity(startActType = Type.HOST_EXIST_ACTIVITY, isApplicationContext = true)
-        }
+//        mBtnStartHostRegisterAct.setOnClickListener {
+//            //启动宿主中__注册__的Activity
+//            startActivity(startActType = Type.HOST_EXIST_ACTIVITY, isApplicationContext = true)
+//        }
+        findViewById<View>(R.id.btn_start_host_register_act).setOnClickListener(this)
         findViewById<View>(R.id.btn_start_host_unregister_act).setOnClickListener(this)
         findViewById<View>(R.id.btn_start_host_unregister_appcompat_act).setOnClickListener(this)
         findViewById<View>(R.id.btn_start_plugin_apk_activity).setOnClickListener(this)
@@ -52,6 +53,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun initLoadPluginResourceImg() {
+        //宿主中使用插件APK中的资源
         findViewById<View>(R.id.btn_load_plugin_img).setOnClickListener {
             val drawableImg = PluginResourceUtil.getPluginDrawableByName(
                 context = applicationContext,
@@ -66,6 +68,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(v: View) {
         when (v.id) {
+            //启动宿主中__注册__的Activity
+            R.id.btn_start_host_register_act -> {
+                startActivity(startActType = Type.HOST_EXIST_ACTIVITY, isApplicationContext = true)
+            }
+            //启动宿主中__未注册__的Activity
             R.id.btn_start_host_unregister_act -> {
                 startActivity(
                     startActType = Type.HOST_UNREGISTER_ACTIVITY,
@@ -73,6 +80,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 )
             }
 
+            //启动宿主中__未注册__的AppCompatActivity
             R.id.btn_start_host_unregister_appcompat_act -> {
                 startActivity(
                     startActType = Type.HOST_UNREGISTER_APPCOMPAT_ACTIVITY,
@@ -80,10 +88,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 )
             }
 
+            //启动插件APK中的Activity
             R.id.btn_start_plugin_apk_activity -> {
                 startActivity(startActType = Type.PLUGIN_ACTIVITY, isApplicationContext = false)
             }
 
+            //启动插件APK中的AppCompatActivity
             R.id.btn_start_plugin_apk_appcompat_activity -> {
                 startActivity(
                     startActType = Type.PLUGIN_APPCOMPAT_ACTIVITY,
@@ -114,8 +124,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             Type.PLUGIN_ACTIVITY -> {
                 intent = Intent()
-                intent.component =
-                    ComponentName(PLUGIN_PACKAGE_NAME, PLUGIN_ACTIVITY_NAME)
+                intent.component = ComponentName(PLUGIN_PACKAGE_NAME, PLUGIN_ACTIVITY_NAME)
             }
 
             Type.PLUGIN_APPCOMPAT_ACTIVITY -> {
