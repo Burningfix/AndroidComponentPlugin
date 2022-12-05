@@ -17,15 +17,16 @@ android {
         consumerProguardFiles("consumer-rules.pro")
     }
 
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
 }
+
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:${KotlinConstants.kotlin_version}")
