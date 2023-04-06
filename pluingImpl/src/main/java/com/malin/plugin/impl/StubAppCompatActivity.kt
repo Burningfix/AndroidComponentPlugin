@@ -16,6 +16,7 @@ class StubAppCompatActivity : AppCompatActivity() {
         val textView = TextView(this)
         textView.text = "StubAppCompatActivity"
         setContentView(textView)
+        setTitle("[插件工具]StubAppCompatActivity")
     }
 
     override fun onStart() {

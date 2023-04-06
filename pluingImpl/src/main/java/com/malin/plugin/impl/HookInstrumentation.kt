@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.text.TextUtils
+import android.util.Log
 import androidx.annotation.Keep
 import dalvik.system.DexClassLoader
 import java.io.File
@@ -30,6 +31,8 @@ object HookInstrumentation {
 
     @SuppressLint("DiscouragedPrivateApi")
     fun hookInstrumentation(context: Context) {
+        Log.i("sanbo","inside HookInstrumentation.hookInstrumentation~~ " )
+
         // 1.from ContextImpl get mMainThread field value (ActivityThread obj)
         // 2.from ActivityThread get mInstrumentation field (Instrumentation obj)
         // 3.replace ActivityThread  mInstrumentation field value use make a Instrumentation instance
@@ -62,13 +65,11 @@ object HookInstrumentation {
                 context.packageManager,
                 StubAppCompatActivity::class.java
             )
-        } catch (e: IllegalAccessException) {
-            e.printStackTrace()
-        } catch (e: NoSuchFieldException) {
-            e.printStackTrace()
-        } catch (e: ClassNotFoundException) {
+        } catch (e: Throwable) {
             e.printStackTrace()
         }
+        Log.i("sanbo","out HookInstrumentation.hookInstrumentation~~ " )
+
     }
 
     @SuppressLint("DiscouragedPrivateApi")

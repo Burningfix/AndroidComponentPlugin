@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             initListener()
             initLoadPluginResourceImg()
         }
+        setTitle("[宿主]MainActivity");
+
     }
 
     private fun initView() {

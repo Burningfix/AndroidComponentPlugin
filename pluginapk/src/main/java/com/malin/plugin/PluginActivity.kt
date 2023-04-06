@@ -16,9 +16,11 @@ class PluginActivity : Activity() {
         val relativeLayout = RelativeLayout(this)
         relativeLayout.gravity = Gravity.CENTER
         val textView = TextView(this)
-        textView.text = "启动插件APK中的PluginActivity,成功!"
+        textView.text = "[插件]启动插件APK中的PluginActivity,成功!"
         relativeLayout.addView(textView)
         setContentView(relativeLayout)
+        setTitle("[插件]PluginActivity");
+
     }
 
     override fun onStart() {

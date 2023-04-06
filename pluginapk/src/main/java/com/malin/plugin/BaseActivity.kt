@@ -12,6 +12,7 @@ open class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTitle("[插件]BaseActivity");
         var hostAppClazz: Class<*>? = null
         try {
             hostAppClazz = Class.forName("com.malin.hook.MApplication")

@@ -14,7 +14,7 @@ Context.java
 实现方法在`ContextWrapper.java`中
 
 2.ContentWrapper.java
-```java
+``` java
 Context mBase;
 @Override
 public void startActivity(Intent intent) {
@@ -26,7 +26,7 @@ public void startActivity(Intent intent) {
 
 在`ContentWrapper`类中查看代码, 寻找mBase初始化的地方,在源码注释出,可以找到是在
 `attachBaseContext`方法处初始化的.
-```java
+``` java
 Context mBase;
 protected void attachBaseContext(Context base) {
    mBase = base;

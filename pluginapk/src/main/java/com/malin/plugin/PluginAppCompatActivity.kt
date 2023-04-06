@@ -26,6 +26,7 @@ class PluginAppCompatActivity : BaseActivity() {
             LayoutInflater.from(this).inflate(R.layout.plugin_activity, null)
         }
         setContentView(rootView)
+        setTitle("[插件]PluginAppCompatActivity");
     }
 
     override fun onStart() {

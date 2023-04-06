@@ -19,9 +19,11 @@ class TargetActivity : Activity() {
         val relativeLayout = RelativeLayout(this)
         relativeLayout.gravity = Gravity.CENTER
         val textView = TextView(this)
-        textView.text = "宿主中未注册的TargetActivity,启动成功!"
+        textView.text = "[宿主]宿主中未注册的TargetActivity,启动成功!"
         relativeLayout.addView(textView)
         setContentView(relativeLayout)
+        setTitle("[宿主]TargetActivity");
+
     }
 
     override fun onStart() {

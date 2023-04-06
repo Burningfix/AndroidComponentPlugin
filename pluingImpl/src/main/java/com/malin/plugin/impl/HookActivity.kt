@@ -35,6 +35,7 @@ object HookActivity {
      */
     @SuppressLint("DiscouragedPrivateApi")
     fun hookStartActivity(context: Context, subActivityClazz: Class<*>) {
+        Log.i("sanbo","inside HookActivity.hookStartActivity~~ subActivityClazz:"+subActivityClazz )
         try {
             val apiLevel = Build.VERSION.SDK_INT
             when {
@@ -115,6 +116,8 @@ object HookActivity {
         } catch (e: Throwable) {
             e.printStackTrace()
         }
+        Log.i("sanbo","out HookActivity.hookStartActivity~~ subActivityClazz:"+subActivityClazz )
+
     }
 
     /**
@@ -127,7 +130,7 @@ object HookActivity {
         IActivityTaskManagerSingletonObj: Any?,
     ) {
         try {
-            Log.i("sanbo","inside  handleIActivityTaskManager   ")
+            Log.i("sanbo","inside  HookActivity.handleIActivityTaskManager   ")
 
             // 5.获取private static final Singleton<IActivityTaskManager> IActivityTaskManagerSingleton对象中的属性private T mInstance的值
             // 既,为了获取一个IActivityTaskManager的实例对象
@@ -176,6 +179,8 @@ object HookActivity {
         } catch (e: Throwable) {
             e.printStackTrace()
         }
+        Log.i("sanbo","out  HookActivity.handleIActivityTaskManager   ")
+
     }
 
     /**
@@ -188,7 +193,8 @@ object HookActivity {
         iActivityManagerSingletonObj: Any?,
     ) {
         try {
-            Log.i("sanbo"," handleIActivityManager iActivityManagerSingletonObj: "+iActivityManagerSingletonObj +"------subActivityClazz:"+subActivityClazz)
+
+            Log.i("sanbo"," inside HookActivity.handleIActivityManager iActivityManagerSingletonObj: "+iActivityManagerSingletonObj +"------subActivityClazz:"+subActivityClazz)
 
             // 5.获取private static final Singleton<IActivityManager> IActivityManagerSingleton对象中的属性private T mInstance的值
             // 既,为了获取一个IActivityManager的实例对象
@@ -229,6 +235,8 @@ object HookActivity {
         } catch (e: Throwable) {
             e.printStackTrace()
         }
+        Log.i("sanbo","out  HookActivity.handleIActivityManager   ")
+
     }
 
     /**
@@ -237,6 +245,8 @@ object HookActivity {
     @SuppressLint("DiscouragedPrivateApi")
     fun hookLauncherActivity() {
         try {
+            Log.i("sanbo","inside  HookActivity.hookLauncherActivity   ")
+
             // 1.获取ActivityThread的Class对象
             // package android.app
             // public final class ActivityThread
@@ -285,9 +295,13 @@ object HookActivity {
         } catch (e: Throwable) {
             e.printStackTrace()
         }
+        Log.i("sanbo","out  HookActivity.hookLauncherActivity   ")
+
     }
 
     private fun handleLaunchActivity(msg: Message) {
+        Log.i("sanbo","inside  HookActivity.handleLaunchActivity   ")
+
         var launchActivity = 100
         try {
             // 1.获取ActivityThread的内部类H的Class对象
@@ -365,6 +379,8 @@ object HookActivity {
         } catch (e: Throwable) {
             e.printStackTrace()
         }
+        Log.i("sanbo","out  HookActivity.handleLaunchActivity   ")
+
     }
 
     @Suppress("SameParameterValue")
@@ -396,6 +412,8 @@ object HookActivity {
      */
     @SuppressLint("DiscouragedPrivateApi")
     fun hookPackageManager(context: Context, subActivityClazz: Class<*>) {
+        Log.i("sanbo","inside  HookActivity.hookPackageManager   ")
+
         try {
             Log.i("sanbo","inside hookPackageManager~~  ")
             // 1.获取ActivityThread的值
@@ -444,6 +462,8 @@ object HookActivity {
         } catch (e: Throwable) {
             e.printStackTrace()
         }
+        Log.i("sanbo","out  HookActivity.hookPackageManager   ")
+
     }
 
     /**
@@ -456,6 +476,8 @@ object HookActivity {
     ) : InvocationHandler {
         @Throws(InvocationTargetException::class, IllegalAccessException::class)
         override fun invoke(proxy: Any, method: Method, args: Array<Any>?): Any? {
+
+            Log.i("sanbo","HookActvity.IActivityInvocationHandler methodName:"+method.name)
             if (method.name == "startActivity" && !args.isNullOrEmpty()) {
                 var intentIndex = 2
                 for (i in args.indices) {
@@ -520,6 +542,8 @@ object HookActivity {
         @SuppressLint("DiscouragedPrivateApi")
         private fun handleActivity(msg: Message) {
             try {
+                Log.i("sanbo","  HookActivity handleActivity msg : "+msg)
+
                 // ClientTransaction-->ClientTransaction中的List<ClientTransactionItem> mActivityCallbacks-->集合中的第一个值LaunchActivityItem-->LaunchActivityItem的mIntent
                 // 这里简单起见,直接取出TargetActivity;
                 // final ClientTransaction transaction = (ClientTransaction) msg.obj;
@@ -610,7 +634,7 @@ object HookActivity {
         // bug fixed java.lang.NullPointerException: null cannot be cast to non-null type kotlin.Any
         @Throws(Throwable::class)
         override fun invoke(proxy: Any, method: Method, args: Array<Any>?): Any? {
-            Log.i("sanbo","  PackageManagerProxyHandler invoke  Method: "+method)
+            Log.i("sanbo","  PackageManagerProxyHandler invoke  Method: "+method.name)
 
             // public android.content.pm.ActivityInfo getActivityInfo(android.content.ComponentName className, int flags, int userId)
             if ("getActivityInfo" == method.name && !args.isNullOrEmpty()) {

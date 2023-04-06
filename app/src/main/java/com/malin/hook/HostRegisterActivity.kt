@@ -24,6 +24,8 @@ class HostRegisterActivity : AppCompatActivity() {
         relativeLayout.addView(textView)
 
         setContentView(relativeLayout)
+        setTitle("[宿主]HostRegisterActivity");
+
     }
 
     override fun onStart() {

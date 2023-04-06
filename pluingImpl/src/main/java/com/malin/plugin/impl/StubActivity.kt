@@ -16,6 +16,7 @@ class StubActivity : Activity() {
         val textView = TextView(this)
         textView.text = "StubActivity"
         setContentView(textView)
+        setTitle("[插件工具]StubActivity")
     }
 
     override fun onStart() {
